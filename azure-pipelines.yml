@@ -33,25 +33,3 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Package Project to NuGet - Preview/Alpha'
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/Rsk.OpenIddict.Utils.csproj'
-    includesymbols: true
-    versionEnvVar: packageVersion
-    versioningScheme: 'byEnvVar'
-    verbosityPack: 'Normal'
-    outputDir: '$(Build.ArtifactStagingDirectory)/Nupkg/Staging'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Package Project for Nuget - Live'
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/Rsk.OpenIddict.Utils.csproj'
-    includesymbols: true
-    versionEnvVar: version
-    versioningScheme: 'byEnvVar'
-    verbosityPack: 'Normal'
-    outputDir: '$(Build.ArtifactStagingDirectory)/Nupkg/Live'

@@ -16,20 +16,29 @@ variables:
   packageVersion: '$(version).$(Build.BuildId)'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: UseDotNet@2
   inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
+    packageType: 'sdk'
+    version: '8.0.x'
+ 
+- task: DotNetCoreCLI@2
+  displayName: 'Package Project to NuGet - Preview/Alpha'
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
+    command: 'pack'
+    packagesToPack: '**/Rsk.OpenIddict.Utils.csproj'
+    includesymbols: true
+    versionEnvVar: packageVersion
+    versioningScheme: 'byEnvVar'
+    verbosityPack: 'Normal'
+    outputDir: '$(Build.ArtifactStagingDirectory)/Nupkg/Staging'
+ 
+- task: DotNetCoreCLI@2
+  displayName: 'Package Project for Nuget - Live'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'pack'
+    packagesToPack: '**/Rsk.OpenIddict.Utils.csproj'
+    includesymbols: true
+    versionEnvVar: version
+    versioningScheme: 'byEnvVar'
+    verbosityPack: 'Normal'
+    outputDir: '$(Build.ArtifactStagingDirectory)/Nupkg/Live'

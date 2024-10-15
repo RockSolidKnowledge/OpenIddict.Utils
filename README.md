@@ -11,8 +11,8 @@ OpenIddict does not provide a built-in mechanism for binding and assigning these
 ### Solution
 In AdminUI, Claims are stored within the Properties bag for each Scope or Client Application under the following keys:
 
-- `urn:com:rocksolidknowledge:adminui:scope:property:claims` in the Scopes
-- `urn:com:rocksolidknowledge:adminui:application:property:claims` in the Applications
+- `urn:com:rocksolidknowledge:scope:property:claims` in the Scopes
+- `urn:com:rocksolidknowledge:application:property:claims` in the Applications
 
 To easily retrieve the assigned claims, you can use the extension method `GetClaimsFromProperties()` from both `IOpenIddictScopeManager` and `IOpenIddictApplicationManager`.
 

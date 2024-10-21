@@ -12,11 +12,11 @@ public static class ApplicationManagerExtensionMethods
     /// Gets the Claims from the properties of the application stored under the AdminUI key.
     /// </summary>
     /// <param name="applicationManager"></param>
-    /// <param name="scope"></param>
+    /// <param name="application"></param>
     /// <returns></returns>
-    public static async Task<List<AdminUIClaim>> GetClaimsFromProperties(this IOpenIddictApplicationManager applicationManager, object scope)
+    public static async Task<List<AdminUIClaim>> GetClaimsFromProperties(this IOpenIddictApplicationManager applicationManager, object application)
     {
-        ImmutableDictionary<string, JsonElement> properties = await applicationManager.GetPropertiesAsync(scope);
+        ImmutableDictionary<string, JsonElement> properties = await applicationManager.GetPropertiesAsync(application);
 
         return properties.TryGetValue(AdminUiConstants.ApplicationPropertyClaims, out var claimsJson) ?
             claimsJson.Deserialize<List<AdminUIClaim>>(new JsonSerializerOptions {PropertyNameCaseInsensitive = true}) ?? [] : [];
@@ -26,11 +26,11 @@ public static class ApplicationManagerExtensionMethods
     /// Returns the claims from the properties of the application stored under the AdminUI key, grouped by Claim type.
     /// </summary>
     /// <param name="applicationManager"></param>
-    /// <param name="scope"></param>
+    /// <param name="application"></param>
     /// <returns></returns>
-    public static async Task<IDictionary<string, ImmutableArray<string>>> GetClaimValuesDictionary(this IOpenIddictApplicationManager applicationManager, object scope)
+    public static async Task<IDictionary<string, ImmutableArray<string>>> GetClaimValuesDictionary(this IOpenIddictApplicationManager applicationManager, object application)
     {
-        var claimsList = await GetClaimsFromProperties(applicationManager, scope);
+        var claimsList = await GetClaimsFromProperties(applicationManager, application);
 
         return claimsList.GroupBy(c => c.Type)
             .ToDictionary(x => x.Key, 

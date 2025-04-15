@@ -18,9 +18,19 @@ public static class ApplicationManagerExtensionMethods
     {
         ImmutableDictionary<string, JsonElement> properties = await applicationManager.GetPropertiesAsync(application);
 
-        return properties.TryGetValue(AdminUiConstants.ApplicationPropertyClaims, out var claimsJson) ?
-            claimsJson.Deserialize<List<AdminUIClaim>>(new JsonSerializerOptions {PropertyNameCaseInsensitive = true}) ?? [] : [];
+        if (properties.TryGetValue(AdminUiConstants.ApplicationPropertyClaims, out var claimsJson))
+        {
+            return claimsJson.DeserialiseTo<AdminUIClaim>();
+        }
+        
+        if (properties.TryGetValue(AdminUiConstants.LegacyApplicationPropertyClaims, out claimsJson))
+        {
+            return claimsJson.DeserialiseTo<AdminUIClaim>();
+        }
+
+        return [];
     }
+    
     
     /// <summary>
     /// Returns the claims from the properties of the application stored under the AdminUI key, grouped by Claim type.

@@ -10,29 +10,43 @@ namespace Rsk.OpenIddict.Utils.Tests;
 
 public class ScopeManagerExtensionMethodsTest
 {
-    private readonly IOpenIddictScopeManager openIddictScopeManager;
+    private readonly IOpenIddictScopeManager openIddictScopeManager = Mock.Of<IOpenIddictScopeManager>();
     
     private readonly object[] fakeClaims = ["middle_name", "email", "role", "birthdate"];
-    private readonly Dictionary<string, JsonElement> fakeProperties;
-
-    public ScopeManagerExtensionMethodsTest()
-    {
-        openIddictScopeManager = Mock.Of<IOpenIddictScopeManager>();
-        
-        fakeProperties = new Dictionary<string, JsonElement>
-        {
-            { AdminUiConstants.ScopePropertyClaims, JsonSerializer.SerializeToElement(fakeClaims)}
-        };
-    }
 
     [Fact]
     public async Task GetClaimsFromProperties_MapToListOfClaims()
     {
         var fakeScopeObject = new { DisplayName = "Fake Scope" };
 
+        var fakeProperties = new Dictionary<string, JsonElement>
+        {
+            { AdminUiConstants.ScopePropertyClaims, JsonSerializer.SerializeToElement(fakeClaims)}
+        };
+        
         Mock.Get(openIddictScopeManager)
             .Setup(x => x.GetPropertiesAsync(fakeScopeObject, It.IsAny<CancellationToken>()))
             .ReturnsAsync(fakeProperties.ToImmutableDictionary());
+
+        var actual = await openIddictScopeManager.GetClaimsFromProperties(fakeScopeObject);
+
+        actual.Should().NotBeNullOrEmpty();
+        actual.Should().BeEquivalentTo(fakeClaims);
+    }
+
+    [Fact]
+    public async Task GetClaimsFromProperties_WhenLegacy_MapToListOfClaims()
+    {
+        var fakeScopeObject = new { DisplayName = "Fake Scope" };
+
+        var fakeLegacyProperties = new Dictionary<string, JsonElement>
+        {
+            { AdminUiConstants.LegacyScopePropertyClaims, JsonSerializer.SerializeToElement(fakeClaims)}
+        };
+        
+        Mock.Get(openIddictScopeManager)
+            .Setup(x => x.GetPropertiesAsync(fakeScopeObject, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(fakeLegacyProperties.ToImmutableDictionary());
 
         var actual = await openIddictScopeManager.GetClaimsFromProperties(fakeScopeObject);
 

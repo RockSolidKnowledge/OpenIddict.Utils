@@ -17,8 +17,17 @@ public static class ScopeManagerExtensionMethods
     {
         ImmutableDictionary<string, JsonElement> properties = await scopeManager.GetPropertiesAsync(scope);
         
-        return properties.TryGetValue(AdminUiConstants.ScopePropertyClaims, out var claimsJson) ?
-            claimsJson.Deserialize<List<string>>() ?? [] : [];
+        if (properties.TryGetValue(AdminUiConstants.ScopePropertyClaims, out var claimsJson))
+        {
+            return claimsJson.DeserialiseTo<string>();
+        }
+        
+        if (properties.TryGetValue(AdminUiConstants.LegacyScopePropertyClaims, out claimsJson))
+        {
+            return claimsJson.DeserialiseTo<string>();
+        }
+
+        return [];
     }
     
     /// <summary>
